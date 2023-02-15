@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: $NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - $K8S-NODE
+      containers:
+      - name: my-app
+        image: IMAGE_VERSION
+        imagePullPolicy: "Always"
+
+        env:
+          - name: FOR_GODS_SAKE_PLEASE_REDEPLOY
+            value: "THIS_STRING_IS_REPLACED_DURING_BUILD"                   
+        envFrom:
+          - configMapRef:
+              name: configmap-my-app
+        resources: 
+        volumeMounts:
+          - mountPath: /home/public_html/app/storage
+            name: my-app-volume
+
+        ports:
+        - containerPort: 80
+
+
+      imagePullSecrets:
+        - name: regcred-$NAMESPACE
+      volumes:
+        - name: my-app-volume
+          hostPath:
+            path: /var/lib/docker/volumes/my-app #directory on host
+            type: DirectoryOrCreate #optional
+        # - name: env
+        #   configMap:
+        #     name: configmap-my-app
+        #     items:
+        #     - key: env
+        #       path: env
