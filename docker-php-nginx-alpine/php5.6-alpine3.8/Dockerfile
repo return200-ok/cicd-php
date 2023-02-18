@@ -9,7 +9,7 @@ WORKDIR /var/www/html
 
 # Install curl, nginx, php, supervisord
 RUN apk add --no-cache \
-  php5 \
+  php \
   curl \
   nginx \
   supervisor
