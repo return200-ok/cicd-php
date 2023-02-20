@@ -22,6 +22,7 @@ RUN apk add --no-cache \
   php5-curl \
   php5-dom \
   php5-fpm \
+  php5-phar \
   php5-gd \
   php5-intl \
   php5-mysqli \
@@ -45,7 +46,7 @@ COPY config/php.ini /etc/php5/conf.d/custom.ini
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Make sure files/folders needed by the processes are accessable when they run under the nginx user
-RUN chown -R nginx:nginx /var/www/html /run /var/lib/nginx /var/log/nginx
+RUN chown -R nginx:nginx /var/www/html /run /var/lib/nginx /var/log
 
 # Switch to use a non-root user from here on
 USER nginx

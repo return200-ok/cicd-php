@@ -15,3 +15,22 @@ RUN wget https://artifacts.aerospike.com/aerospike-client-c/${AS_C_VERSION}/aero
     && mv aerospike-client-c-src-${AS_C_VERSION} aerospike-client-c \
     && cd aerospike-client-c \
     && make EVENT_LIB=libuv
+
+
+FROM composer AS composer
+
+# Stage 2: Build Aerospike PHP client
+FROM php5.6:alpine3.8 as aerospike-php-builder
+
+WORKDIR /src
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+RUN composer require aerospike/aerospike-client-php5 "~3.4"
+RUN find vendor/aerospike/aerospike-client-php5/ -name "*.sh" -exec chmod +x {} \;
+RUN cd /src/vendor/aerospike/aerospike-client-php5/src
+
+COPY --from=aerospike-c-builder /src/aerospike-client-c/target/Linux-x86_64/* aerospike-client-c/
+
+RUN apk add bash
+RUN ./build.sh
+
