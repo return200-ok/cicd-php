@@ -33,8 +33,19 @@ RUN apk add --no-cache \
   php7-xml \
   php7-xmlreader \
   php7-bcmath \
-  php7-tokenizer
+  php7-tokenizer \
+  php7-dev \
+  php7-pear
 
+# Install Xdebug
+RUN apk add --no-cache \
+    git \
+    yarn \
+    autoconf \
+    g++ \
+    make \
+    openssl-dev 
+RUN pecl install xdebug-3.1.6
 # Configure nginx - http
 COPY config/nginx.conf /etc/nginx/nginx.conf
 # Configure nginx - default server
